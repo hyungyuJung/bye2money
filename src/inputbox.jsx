@@ -23,6 +23,9 @@ function InputBox() {
   const EXPENSE_CATEGORIES = ['생활', '식비', '교통', '쇼핑/뷰티', '의료/건강','문화/여가', '미분류']
   const INCOME_CATEGORIES = ['월급', '용돈', '기타 수입']
 
+  // 내용 상태 (최대 32자)
+  const [content, setContent] = useState('')
+
   // 숫자 문자열을 천 단위 콤마로 포맷
   const formatNumber = (s) => {
     if (!s) return ''
@@ -33,6 +36,11 @@ function InputBox() {
     // 입력에서 비숫자 제거(콤마 포함), 최대 길이 제한
     const raw = e.target.value.replace(/[^\d]/g, '').slice(0, 12)
     setAmount(raw)
+  }
+
+  const handleContentChange = (e) => {
+    const v = e.target.value.slice(0, 32)
+    setContent(v)
   }
 
   return (
@@ -81,8 +89,17 @@ function InputBox() {
            </div>
 
            <div className="field content-field">
-             <label className="field-label">내용</label>
-             <input type="text" className="field-control" maxLength={32} placeholder="입력해주세요 (최대 32자)" />
+             <div className="field-label-row">
+               <label className="field-label">내용</label>
+               <div className="char-count" aria-live="polite">{content.length}/32</div>
+             </div>
+             <input
+               type="text"
+               className="field-control"
+               value={content}
+               onChange={handleContentChange}
+               placeholder="입력해주세요 (최대 32자)"
+             />
            </div>
 
            <div className="field select-field">
