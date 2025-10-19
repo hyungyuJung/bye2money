@@ -23,6 +23,9 @@ function InputBox() {
   const EXPENSE_CATEGORIES = ['생활', '식비', '교통', '쇼핑/뷰티', '의료/건강','문화/여가', '미분류']
   const INCOME_CATEGORIES = ['월급', '용돈', '기타 수입']
 
+  // 결제수단 상태
+  const [payment, setPayment] = useState('')
+
   // 내용 상태 (최대 32자)
   const [content, setContent] = useState('')
 
@@ -41,6 +44,39 @@ function InputBox() {
   const handleContentChange = (e) => {
     const v = e.target.value.slice(0, 32)
     setContent(v)
+  }
+
+  // 유효성: date(10자), amount > 0, content non-empty, payment, category
+  const isValid = (() => {
+    const hasDate = date && date.length === 10
+    const amt = parseInt(amount || '0', 10)
+    return hasDate && amt > 0 && content.trim().length > 0 && payment && category
+  })()
+
+  const handleSubmit = () => {
+    if (!isValid) return
+    const log = {
+      id: Date.now(),
+      date,
+      type: sign === '-' ? 'expense' : 'income',
+      sign,
+      amount: parseInt(amount || '0', 10),
+      content,
+      payment,
+      category,
+      createdAt: new Date().toISOString(),
+    }
+    const key = 'bye2money_logs'
+    const arr = JSON.parse(localStorage.getItem(key) || '[]')
+    arr.unshift(log) // 최신을 앞에
+    localStorage.setItem(key, JSON.stringify(arr))
+    // 이벤트로 로그 갱신 알림
+    window.dispatchEvent(new CustomEvent('logsUpdated', { detail: log }))
+    // 폼 초기화(필요하면 조절)
+    setAmount('')
+    setContent('')
+    setCategory('')
+    setPayment('')
   }
 
   return (
@@ -104,11 +140,15 @@ function InputBox() {
 
            <div className="field select-field">
              <label className="field-label">결제수단</label>
-             <select className="field-control">
+             <select
+               className="field-control"
+               value={payment}
+               onChange={(e) => setPayment(e.target.value)}
+             >
                <option value="">선택하세요</option>
-               <option>현금</option>
-               <option>체크카드</option>
-               <option>신용카드</option>
+               <option value="현금">현금</option>
+               <option value="체크카드">체크카드</option>
+               <option value="신용카드">신용카드</option>
              </select>
            </div>
 
@@ -128,7 +168,14 @@ function InputBox() {
 
            <div className="field submit-field">
              <label className="field-label" aria-hidden="true">&nbsp;</label>
-             <button className="submit-btn" type="button" disabled>확인</button>
+             <button
+               className="submit-btn"
+               type="button"
+               disabled={!isValid}
+               onClick={handleSubmit}
+             >
+               확인
+             </button>
            </div>
          </div>
        </div>
