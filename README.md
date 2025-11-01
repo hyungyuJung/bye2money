@@ -14,6 +14,6 @@
 	* 추가 기능으로 입력창에 입력시 해당 월로 변화시키도록 구현
 - [ ] peer review 주신 내용 반영
 	* 페이지 이동 react router로 구현 (기존의 window.location.href 변화) + 둘 차이 공부
-	* constant 변수/함수들 component 밖으로 빼기
+	* ~~constant 변수/함수들 component 밖으로 빼기~~
 	* 많은 객체 통합 관리
 	* local storage error 처리 추가

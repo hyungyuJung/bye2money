@@ -1,6 +1,12 @@
 import React, { useState } from 'react'
 import './inputbox.css'
 
+// add commas to number string (moved from component body to avoid re-creation on each render)
+const formatNumber = (s) => {
+  if (!s) return ''
+  return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
 function InputBox() {
   // 기본값: 오늘 날짜 (YYYY-MM-DD)
   const [date, setDate] = React.useState(() => {
@@ -28,13 +34,7 @@ function InputBox() {
 
   // 내용 상태 (최대 32자)
   const [content, setContent] = useState('')
-
-  // 숫자 문자열을 천 단위 콤마로 포맷
-  const formatNumber = (s) => {
-    if (!s) return ''
-    return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  }
-
+  
   const handleAmountChange = (e) => {
     // 입력에서 비숫자 제거(콤마 포함), 최대 길이 제한
     const raw = e.target.value.replace(/[^\d]/g, '').slice(0, 12)
