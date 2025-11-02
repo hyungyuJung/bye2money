@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './logs.css'
 
 // add commas to number string (moved from component body to avoid re-creation on each render)
@@ -17,8 +17,28 @@ const formatDateForDisplay = (dateStr) => {
   });
 }
 
-function Logs({ date, logs }) {
+function Logs({ date, logs, deleteLog }) {
  
+  // logToDelete가 null이면 모달 숨김, log 객체가 있으면 모달 표시
+  const [logToDelete, setLogToDelete] = useState(null);
+  // 삭제 버튼 클릭 시 -> 모달 열기
+  const handleOpenDeleteModal = (log) => {
+    setLogToDelete(log);
+  };
+
+  // 모달에서 '취소' 클릭 시 -> 모달 닫기
+  const handleCloseDeleteModal = () => {
+    setLogToDelete(null);
+  };
+
+  // 모달에서 '삭제' 클릭 시 -> 실제 삭제 로직 실행
+  const handleConfirmDelete = () => {
+    if (logToDelete) {
+      deleteLog(logToDelete.id);
+      setLogToDelete(null); // 모달 닫기
+    }
+  };
+
   // 1. 선택된 '월'에 해당하는 내역만 필터링
   const selectedYear = date.getFullYear()
   const selectedMonth = String(date.getMonth() + 1).padStart(2, '0')
@@ -144,12 +164,60 @@ function Logs({ date, logs }) {
                   <span className={`log-amount ${log.type === 'income' ? 'amount-income' : 'amount-expense'}`}>
                     {log.sign}{formatNumber(log.amount)}
                   </span>
+                  <button 
+                    className="log-delete-btn" 
+                    onClick={(e) => {
+                      e.stopPropagation(); // li의 클릭 이벤트 전파 방지
+                      handleOpenDeleteModal(log);
+                    }}
+                  >
+                    &times; {/* 'x' 아이콘 */}
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
+
+      {logToDelete && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal-content">
+            <h3 className="delete-modal-header">내역 삭제</h3>
+            <p className="delete-modal-prompt">
+              정말로 이 내역을 삭제하시겠습니까?
+            </p>
+            
+            {/* 삭제할 내역 정보 표시 */}
+            <div className="delete-modal-body">
+              <div className="log-item-preview">
+                <span>{logToDelete.date}</span>
+                <span>{logToDelete.content}</span>
+                <span className={logToDelete.type === 'income' ? 'amount-income' : 'amount-expense'}>
+                  {logToDelete.sign}{formatNumber(logToDelete.amount)}원
+                </span>
+              </div>
+            </div>
+
+            {/* 확인/취소 버튼 */}
+            <div className="delete-modal-actions">
+              <button 
+                className="modal-btn modal-btn-cancel"
+                onClick={handleCloseDeleteModal}
+              >
+                취소
+              </button>
+              <button 
+                className="modal-btn modal-btn-confirm"
+                onClick={handleConfirmDelete}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
   )
 }

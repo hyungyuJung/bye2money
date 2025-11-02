@@ -27,12 +27,22 @@ function App() {
       console.error('저장 실패:', error)
     }
   }
+
+  const deleteLog = (logId) => {
+    try {
+      const updatedLogs = logs.filter(log => log.id !== logId);
+      setLogs(updatedLogs);
+      localStorage.setItem('bye2money_logs', JSON.stringify(updatedLogs));
+    } catch (error) {
+      console.error('로그 삭제 실패:', error);
+    }
+  };
   
   return (
     <StrictMode>
       <Header date={date} setDate={setDate} />
       <InputBox addLogs={addLogs} />
-      <Logs date={date} logs={logs} />
+      <Logs date={date} logs={logs} deleteLog={deleteLog} />
     </StrictMode>
   );
 }
