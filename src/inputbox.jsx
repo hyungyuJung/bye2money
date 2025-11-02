@@ -7,7 +7,9 @@ const formatNumber = (s) => {
   return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-function InputBox() {
+// ⚠️ setLogs prop은 App.jsx에서 InputBox로 전달되지만 사용되지 않아 제거했습니다.
+// 원본: function InputBox({ setLogs, addLogs}) {
+function InputBox({ addLogs }) {
   // 기본값: 오늘 날짜 (YYYY-MM-DD)
   const [date, setDate] = React.useState(() => {
     const d = new Date()
@@ -66,18 +68,15 @@ function InputBox() {
       category,
       createdAt: new Date().toISOString(),
     }
-    const key = 'bye2money_logs'
-    const arr = JSON.parse(localStorage.getItem(key) || '[]')
-    arr.unshift(log) // 최신을 앞에
-    localStorage.setItem(key, JSON.stringify(arr))
-    // 이벤트로 로그 갱신 알림
-    window.dispatchEvent(new CustomEvent('logsUpdated', { detail: log }))
+    
+    addLogs(log)
+
     // 폼 초기화(필요하면 조절)
     setAmount('')
     setContent('')
     setCategory('')
     setPayment('')
-  }
+}
 
   return (
 	<>

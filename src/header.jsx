@@ -1,14 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './header.css'
 
 const MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
-function Header() {
-  const [date, setDate] = useState(new Date())
-  
-  const handleNavigate = (path) => {
-    window.location.href = path
-  }
+function Header({ date, setDate }) {
+
+	const handleNavigate = (path) => {
+		window.location.href = path
+	}
 
   // Month manipulation & reading functions
   const prevMonth = () => {
